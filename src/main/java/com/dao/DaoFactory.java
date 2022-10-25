@@ -12,9 +12,7 @@ public class DaoFactory {
 
     @Bean
     public UserDao userDao() {
-        UserDao userDao = new UserDao();
-        userDao.setDataSource(dataSource());
-        return userDao;
+        return new UserDao(dataSource(), new JdbcContext(dataSource()));
     }
 
     @Bean
@@ -28,6 +26,8 @@ public class DaoFactory {
 
         return dataSource;
     }
+
+
 
 
 
