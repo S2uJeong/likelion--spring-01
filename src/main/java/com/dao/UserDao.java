@@ -41,7 +41,7 @@ public class UserDao {
         ResultSet rs = ps.executeQuery();
 
         User user = null;
-        if (rs.next()) { // 쿼리의 결과가 있으면 User 오브젝트를 만들고 값을 넣는다.
+        if (rs.next()) { 
             user = new User();
             user.setId(rs.getString("id"));
             user.setName(rs.getString("name"));
@@ -51,10 +51,8 @@ public class UserDao {
         rs.close();
         ps.close();
         conn.close();
-
-        // 결과가 없으면 User은 null 상태 그대로이다. 이를 확인해서 예외를 던진다.
+        
         if (user==null) throw new EmptyResultDataAccessException(1);
-
 
         return user;
 
