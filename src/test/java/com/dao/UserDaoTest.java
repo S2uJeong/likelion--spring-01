@@ -15,11 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserDaoTest {
     private UserDao dao;
-
-    /* 이전에 전역 변수로 빼 두었던 픽스처를 뺀다. (오류발생요인제거)
-    private User user1;
-    private User user2;
-    private User user3;*/
     
     @BeforeEach
     public void setUp() {

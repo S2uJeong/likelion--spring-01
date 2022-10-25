@@ -60,18 +60,19 @@ public class UserDao {
 
     public void deleteAll() throws SQLException, ClassNotFoundException {
 
-        // Connection conn = connectionMaker.makeConnection();
         Connection conn = null;
-        // PreparedStatement ps = conn.prepareStatement("delete from users");
         PreparedStatement ps = null;
 
         try {
             conn = connectionMaker.makeConnection();
-            ps = conn.prepareStatement("delete from users");
-            ps.executeUpdate();
+            // prepareStatement를 만들어서 업데이트용 쿼리를 실행하는 메서드 만든다면,
+            // 아래 한줄 코드 만이 변하는 부분이다. -> 변하는 부분을 분리하고 변하지 않는 부분은 재사용하자!
+            // ps = conn.prepareStatement("delete from users");
+            StatementStrategy strategy = new DeleteAllStatement(); // 패턴에 따라 클래스 분리, 객체 불러와서 pstm실행
+            ps = strategy.makePreparedStatement(conn);  // 지금은 OCP 위반상태.
         } catch (SQLException e) {
             throw e;
-        } finally { // 핵심. 예외가 발생해도 리소스를 반환 할 수 있게한다.
+        } finally {
             if (ps != null) {
                 try {
                     ps.close();
