@@ -11,10 +11,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserDao {
-    // JdbcTemplate는 스프링이 제공하는 JDBC 코드용 기본 템플릿이다.
-    // 만들었던 JdbcContext를 대체한다.
+
     private JdbcTemplate jdbcTemplate;
 
     public UserDao(DataSource dataSource) {
@@ -24,9 +24,8 @@ public class UserDao {
     }
 
     public void deleteAll() {
-        // this.jdbcContext.executeSql("delete from users");
-        // 이렇게 다른 클래스에서 만든 메서드를 가져오면서 넣었던 쿼리가
-        this.jdbcTemplate.update("delete from users"); // 템플릿의 .update() 기능으로 해결된다.
+
+        this.jdbcTemplate.update("delete from users");
     }
 
     public void add(User user) {
@@ -36,8 +35,6 @@ public class UserDao {
         );
     }
 
-    // 간결해진 코드를 통해 새로운 메서드 findById를 만들어본다.
-    // RowMapper 인터페이스 구현체를 내부에 넣어주었다. rs를 User에 매핑한다.
     public User findById(String id) {
         String sql = "select * from users where id =?";
         RowMapper<User> rowMapper = new RowMapper<User>() {
@@ -56,6 +53,20 @@ public class UserDao {
 
     public int getCount() {
         return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
+    }
+
+    public List<User> getAll() {
+        return this.jdbcTemplate.query("select * from users order by id",
+                new RowMapper<User>() {
+                    @Override
+                    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        User user = new User();
+                        user.setId(rs.getString("id"));
+                        user.setName(rs.getString("name"));
+                        user.setPassword(rs.getString("password"));
+                        return user;
+                    }
+                });
     }
 
 
