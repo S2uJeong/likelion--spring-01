@@ -33,9 +33,7 @@ class UserDaoTest {
         assertThat(dao.getCount()).isEqualTo(1);
         dao.add(user2);
         assertThat(dao.getCount()).isEqualTo(2);
-        
-         User userget1 = dao.get(user1.getId());
-         assertThat(userget1.getName()).isEqualTo(user1.getName());
+
 
     }    
 
