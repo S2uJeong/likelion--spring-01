@@ -3,6 +3,7 @@ package com.dao;
 import com.domain.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import javax.sql.DataSource;
 import java.lang.ref.PhantomReference;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,22 +11,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDao {
-    private ConnectionMaker connectionMaker;
+    private DataSource dataSource;
 
-    public UserDao(ConnectionMaker connectionMaker) {
-        this.connectionMaker = connectionMaker;
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
+
+    public UserDao() { }
 
     public void add(User user) throws SQLException, ClassNotFoundException {
         StatementStrategy strategy = new AddStatement(user);
         jdbcContextWithStatementStrategy(strategy);
-        // 반복적인 context ( connection, try-final) 을 묶어준 메서드를 이용하니 코드가 한결 간결해졌다.
-        // 또한 달라지는 sql 부분만 strategy에서 다르게 넣어주어 다양한 메서드를 더 만들 수 있다.!
 
     }
 
     public User get(String id) throws SQLException, ClassNotFoundException {
-        Connection conn = connectionMaker.makeConnection();
+        Connection conn = dataSource.getConnection();
 
         PreparedStatement ps = conn.prepareStatement(
                 "select * from users where id = ?");
@@ -57,13 +58,13 @@ public class UserDao {
 
     }
 
-    public int getCount() throws SQLException, ClassNotFoundException {
+    public int getCount() throws SQLException {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
         try {
-            conn = connectionMaker.makeConnection();
+            conn = dataSource.getConnection();
             ps = conn.prepareStatement("select count(*) from users");
             rs = ps.executeQuery();
             rs.next();
@@ -92,15 +93,15 @@ public class UserDao {
         }
     }
 
-    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException, ClassNotFoundException {
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
         Connection conn = null;
         PreparedStatement ps = null;
 
         try {
-            conn = connectionMaker.makeConnection();
+            conn = dataSource.getConnection();
             ps = stmt.makePreparedStatement(conn);
             ps.executeUpdate();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             throw e;
         } finally {
             if (ps != null) {
@@ -117,6 +118,7 @@ public class UserDao {
             }
         }
     }
+
 
 }
 
