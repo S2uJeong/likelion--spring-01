@@ -17,15 +17,33 @@ public class UserDao {
         this.dataSource = dataSource;
     }
 
-    public UserDao() { }
-
-    public void add(User user) throws SQLException, ClassNotFoundException {
-        StatementStrategy strategy = new AddStatement(user);
-        jdbcContextWithStatementStrategy(strategy);
-
+    public UserDao() {
     }
 
-    public User get(String id) throws SQLException, ClassNotFoundException {
+    public void add(final User user) throws SQLException {
+        // class AddStatement implements StatementStrategy { // 내부에 선언한 로컬 클래스
+        // StatementStrategy st = new StatementStrategy() { // 익명함수화
+
+        jdbcContextWithStatementStrategy(
+                // 최종적으로 내부 클래의 오브젝트는 딱 한번만 사용하니 굳이 변수에 안 담고 메소드의 파라메터로 생성했다.
+                new StatementStrategy() {
+                    @Override
+                    public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
+                        PreparedStatement ps = conn.prepareStatement(
+                                "insert into users(id, name, password) values(?,?,?)");
+                        ps.setString(1, user.getId());
+                        ps.setString(2, user.getName());
+                        ps.setString(3, user.getPassword());
+
+                        return ps;
+                    }
+                }
+        );
+        /*StatementStrategy strategy = new AddStatement();
+        jdbcContextWithStatementStrategy(strategy);*/
+    }
+
+    public User get(String id) throws SQLException {
         Connection conn = dataSource.getConnection();
 
         PreparedStatement ps = conn.prepareStatement(
@@ -51,11 +69,15 @@ public class UserDao {
 
     }
 
-    public void deleteAll() throws SQLException, ClassNotFoundException {
-
-        StatementStrategy strategy = new DeleteAllStatement();
-        jdbcContextWithStatementStrategy(strategy);
-
+    public void deleteAll() throws SQLException {
+        jdbcContextWithStatementStrategy(
+            new StatementStrategy() {
+                @Override
+                public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
+                    return conn.prepareStatement("delete from users");
+                }
+            }
+        );
     }
 
     public int getCount() throws SQLException {
