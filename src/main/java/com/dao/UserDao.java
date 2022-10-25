@@ -16,7 +16,7 @@ public class UserDao {
     }
 
     public void add(User user) throws SQLException, ClassNotFoundException {
-        // 이 부분에선, 이제 인터페이스에 정의된 메소드를 사용하므로 DB클래스가 바뀐다 해도 메소드 이름이 변경될 걱정이 없다.
+
         Connection conn = connectionMaker.makeConnection();
 
         PreparedStatement ps = conn.prepareStatement(

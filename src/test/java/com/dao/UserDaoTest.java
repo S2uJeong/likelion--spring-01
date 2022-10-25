@@ -1,6 +1,8 @@
 package com.dao;
 
 import com.domain.User;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.sql.SQLException;
 
@@ -9,10 +11,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserDaoTest {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        UserDao dao = new DaoFactory().userDao();
-        // DaoFactory.class를 만들어서 책임을 분리했기에,
-        // Test.class에선 UserDao가 어떻게 만들어 지는지 신경쓰지 않고
-        // Factory에서 UserDao 오브젝트를 받아다가, 활용만 하면된다.
+        // 설정정보가 들어있는 DaoFactory class를 ApplicationContext로 넘긴다. (코드 사용방법 외우기)
+        // getBean()은 DaoFactory 안에 있는 bean(객체)를 가져오는 ApplicationContext의 메서드
+        // 'userDao'는 자동생성(default)되는 bean의 이름이다. bean 클래스명에서 앞글자만 소문자로 바꾸는게 규칙이다.
+        ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+        UserDao dao = context.getBean("userDao", UserDao.class);
+
 
         User user = new User();
         user.setId("1");
