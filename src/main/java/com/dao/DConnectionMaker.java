@@ -6,8 +6,9 @@ import java.sql.SQLException;
 
 import static com.dao.ConnectionConst.*;
 
-public class SimpleConnectionMaker {
-    public Connection getConnection() throws SQLException {
+public class DConnectionMaker implements ConnectionMaker{
+    @Override
+    public Connection makeConnection() throws ClassNotFoundException, SQLException {
         Connection conn = DriverManager.getConnection(URL,USERNAME,PASSWORD);
         return conn;
     }
