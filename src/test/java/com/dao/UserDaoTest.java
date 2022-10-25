@@ -6,12 +6,14 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserDaoTest { // 클라이언트 역할을 하는 test class
+class UserDaoTest {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        ConnectionMaker connectionMaker = new DConnectionMaker();
-        // 이제 클라이언트에서만 어떤 DBMaker을 사용할지 고쳐주기만 하면 된다.
-        UserDao dao = new UserDao(connectionMaker);
+        UserDao dao = new DaoFactory().userDao();
+        // DaoFactory.class를 만들어서 책임을 분리했기에,
+        // Test.class에선 UserDao가 어떻게 만들어 지는지 신경쓰지 않고
+        // Factory에서 UserDao 오브젝트를 받아다가, 활용만 하면된다.
+
         User user = new User();
         user.setId("1");
         user.setName("sujeong");
