@@ -21,29 +21,27 @@ class UserDaoTest {
     public void setUp() {
         ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
         dao = context.getBean("userDao", UserDao.class);
+        dao.deleteAll();
     }
 
     @Test
     public void getAll() {
-        dao.deleteAll();
+        List<User> users = dao.getAll();
+        assertThat(users.size()).isEqualTo(0);
 
         User user1 = new User("1", "sujeong1", "password1");
         User user2 = new User("2", "sujeong2", "password2");
 
         dao.add(user1);
-        List<User> users1 = dao.getAll();
-        assertThat(users1.size()).isEqualTo(1);
-
         dao.add(user2);
-        List<User> users2 = dao.getAll();
-        assertThat(users1.size()).isEqualTo(2);
-
+        users = dao.getAll();
+        assertThat(users.size()).isEqualTo(2);
 
     }
 
     @Test
-    public void addAndGet() throws SQLException, ClassNotFoundException {
-        dao.deleteAll();
+    public void addAndGet()  {
+
         assertThat(dao.getCount()).isEqualTo(0);
 
         User user1 = new User("1", "sujeong1", "password1");
